@@ -1,1 +1,5 @@
-requests
+boto3
+slack_sdk
+haystack-ai>=2.15
+amazon-bedrock-haystack>=3.8.0
+python-dotenv

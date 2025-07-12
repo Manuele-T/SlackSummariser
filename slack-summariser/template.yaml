@@ -10,22 +10,30 @@ Resources:
       Handler: app.handler
       Runtime: python3.12
       Architectures: [ x86_64 ]
-      Timeout: 60                       # give the summariser up to a minute
+      Timeout: 60
       Environment:
         Variables:
+          HAYSTACK_TELEMETRY_ENABLED: "false"
           SLACK_BOT_TOKEN_SECRET_ARN: arn:aws:secretsmanager:eu-west-2:796973506624:secret:slack/bot-token-Kh5mHP
           SLACK_CHANNEL_ID: "C0966909TSL"
       Policies:
         - AWSLambdaBasicExecutionRole
         - Statement:
             Effect: Allow
-            Action: secretsmanager:GetSecretValue
+            Action:
+              - secretsmanager:GetSecretValue
             Resource: arn:aws:secretsmanager:eu-west-2:796973506624:secret:slack/bot-token-Kh5mHP
+        - Statement:
+            Effect: Allow
+            Action:
+              - bedrock:InvokeModel
+            Resource:
+              - arn:aws:bedrock:eu-west-2::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0
       Events:
         DailyTrigger:
           Type: Schedule
           Properties:
-            Schedule: cron(0 7 * * ? *)      # 07:00 UTC ⇒ 08:00 UK
+            Schedule: cron(0 7 * * ? *)
             Name: SlackSummariserDaily
             Enabled: true
 
