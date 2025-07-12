@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Slack Stand-up Summariser – runs daily, posts a 5-bullet summary.
+
+Resources:
+  SlackSummaryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: slack_summary/
+      Handler: app.handler
+      Runtime: python3.12
+      Architectures: [ x86_64 ]
+      Timeout: 60                       # give the summariser up to a minute
+      Environment:
+        Variables:
+          SLACK_BOT_TOKEN_SECRET_ARN: arn:aws:secretsmanager:eu-west-2:796973506624:secret:slack/bot-token-Kh5mHP
+          SLACK_CHANNEL_ID: "C0966909TSL"
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action: secretsmanager:GetSecretValue
+            Resource: arn:aws:secretsmanager:eu-west-2:796973506624:secret:slack/bot-token-Kh5mHP
+      Events:
+        DailyTrigger:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 7 * * ? *)      # 07:00 UTC ⇒ 08:00 UK
+            Name: SlackSummariserDaily
+            Enabled: true
+
+Outputs:
+  SlackSummaryFunctionArn:
+    Description: Lambda Function ARN
+    Value: !GetAtt SlackSummaryFunction.Arn
