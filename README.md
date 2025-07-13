@@ -1,5 +1,7 @@
 # Slack Stand-up Summariser
 
+![Slack Summariser Output](screenshots/pic01.jpg)
+
 A serverless automation that pulls the last 24 hours of messages from a Slack channel each morning, runs a RAG pipeline against Amazon Bedrock Claude 3 Sonnet to produce a concise five-bullet summary, and posts the result back to Slack.
 
 ## Features
